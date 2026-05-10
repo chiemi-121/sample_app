@@ -1,13 +1,33 @@
 <h1>投稿一覧</h1>
-<% @lists.each do |list| %>
 
+<%# バリデーションエラーメッセージを表示するコード（ここを追加） %>
+<% if @list.errors.any? %>
+  <div id="error_explanation">
+    <h2><%= @list.errors.count %>件のエラーが発生しました</h2>
+    <ul>
+      <% @list.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<% @lists.each do |list| %>
   <p>タイトル</p>
   <span>
-    <%=link_to list.title, list_path(list.id) %>
+    <%# IDが空のデータ（保存失敗データ）はリンクを作らないようにする %>
+    <% if list.id.present? %>
+      <%= link_to list.title, list_path(list.id) %>
+    <% else %>
+      <%= list.title %>
+    <% end %>
   </span>
   
-  
   <p>画像</p>
-  <%= image_tag list.image, size: "200x200" %>
-
+  <%# 重要：画像がくっついている時だけ image_tag を動かす %>
+  <% if list.image.attached? %>
+    <%= image_tag list.image, size: "200x200" %>
+  <% else %>
+    <p>画像なし</p>
+  <% end %>
 <% end %>
